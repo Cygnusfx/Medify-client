@@ -1,14 +1,18 @@
-import React from 'react'
-// import PDFGenerator from './components/PDFGenerator'
-// import LoginPage from './features/auth/components/LoginPage'
-import Register from './features/auth/components/Register'
+import React from "react";
 
-const App : React.FC = () => {
+import { Route, Routes } from "react-router-dom";
+import LoginPage from "./features/auth/pages/LoginPage";
+import RegisterPage from "./features/auth/pages/RegisterPage";
+import Processor from "./features/auth/components/Processor";
+
+const App: React.FC = () => {
   return (
-    // <PDFGenerator/>
-    // <LoginPage/>
-    <Register/>
-  )
-}
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/auth/callback" element={<Processor />} />
+    </Routes>
+  );
+};
 
-export default App
+export default App;

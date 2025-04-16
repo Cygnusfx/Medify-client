@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const LoginPage: React.FC = () => {
+export const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -49,4 +49,3 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;

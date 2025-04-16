@@ -1,12 +1,17 @@
 import React, { useState } from "react";
+import { RegisterFormInterface } from "../interfaces/registerFormInterface";
+import useSupabaseAuth from "../hooks/useSupabaseAuth";
+import useAuthViaServer from "../hooks/useAuthViaServer";
+import { useNavigate } from "react-router-dom";
 
-const Register: React.FC = () => {
-  interface FormData {
-    email: string;
-    password: string;
-    role: "doctor" | "patient" | "";
-  }
-  const [formData, setFormData] = useState<FormData>({
+export const Register: React.FC = () => {
+  const { signInWithGoogle, registerWithEmailPassword } = useSupabaseAuth();
+  const { signInWithGoogleService, registerWithEmailPasswordService } =
+    useAuthViaServer();
+
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<RegisterFormInterface>({
+    name: "",
     email: "",
     password: "",
     role: "",
@@ -14,9 +19,27 @@ const Register: React.FC = () => {
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-  const handleSubmit = () => {
+
+
+  const handleSubmit = async () => {
     console.log("Form Data:", formData);
-    alert("Form submitted successfully!");
+    const tokenFromSupabaseAuthHook = await registerWithEmailPassword(
+      formData.email,
+      formData.password
+    );
+    if (tokenFromSupabaseAuthHook) {
+      const responseFromServer = await registerWithEmailPasswordService(
+        formData.name,
+        formData.email,
+        formData.role,
+        tokenFromSupabaseAuthHook
+      );
+      if (responseFromServer) {
+        navigate(`/username/dashboard`);
+        return;
+      }
+      alert("Error registering user!");
+    }
   };
   return (
     <>
@@ -41,9 +64,16 @@ const Register: React.FC = () => {
               <option value="patient">Patient</option>
             </select>
             <input
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              type="text"
+              placeholder="Name"
+              className="border p-2 mb-4 rounded-lg"
+            />
+            <input
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
-              type="text"
+              type="email"
               placeholder="Email"
               className="border p-2 mb-4 rounded-lg"
             />
@@ -66,7 +96,9 @@ const Register: React.FC = () => {
             </button>
           </form>
           <hr className="my-4" />
-          <button className="text-md bg-green-500 text-white py-2 w-full font-medium rounded-full cursor-pointer">
+          <button onClick={async () => {
+            await signInWithGoogle();
+          }} className="text-md bg-green-500 text-white py-2 w-full font-medium rounded-full cursor-pointer">
             Goolugulu
           </button>
         </div>
@@ -74,5 +106,3 @@ const Register: React.FC = () => {
     </>
   );
 };
-
-export default Register;
