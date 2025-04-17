@@ -16,8 +16,7 @@ async function logInWithEmailPasswordService (email: string, token : string) {
         }
       );
 
-      localStorage.setItem("username", responseFromServer.data.data.username);
-
+      
       return true;
     } catch (error) {
       return false;

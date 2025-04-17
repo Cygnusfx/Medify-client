@@ -1,6 +1,15 @@
 import React, { useState } from "react";
+import useSupabaseAuth from "../hooks/useSupabaseAuth";
+import useAuthViaServer from "../hooks/useAuthViaServer";
+import { useNavigate } from "react-router-dom";
 
 export const Login: React.FC = () => {
+  const { signInWithGoogle, registerWithEmailPassword } = useSupabaseAuth();
+    const { signInWithGoogleService, logInWithEmailPasswordService } =
+      useAuthViaServer();
+
+      const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -8,9 +17,23 @@ export const Login: React.FC = () => {
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Form Data:", formData);
-    alert("Form submitted successfully!");
+    const tokenFromSupabaseAuthHook = await registerWithEmailPassword(
+      formData.email,
+      formData.password
+    );
+    if (tokenFromSupabaseAuthHook) {
+      const responseFromServer = await logInWithEmailPasswordService(
+        formData.email,
+        tokenFromSupabaseAuthHook
+      );
+      if (responseFromServer) {
+        navigate(`/username/dashboard`);
+        return;
+      }
+      alert("Error logging in user!");
+    }
   };
   return (
     <>
