@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import useSupabaseAuth from "../hooks/useSupabaseAuth";
+import useAuthViaServer from "../hooks/useAuthViaServer";
+import { useNavigate } from "react-router-dom";
 
 export const Login: React.FC = () => {
   interface LoginFormData {
@@ -74,6 +77,23 @@ export const Login: React.FC = () => {
       console.log("Google login initiated");
       setIsLoading(false);
     }, 1500);
+  const handleSubmit = async () => {
+    console.log("Form Data:", formData);
+    const tokenFromSupabaseAuthHook = await registerWithEmailPassword(
+      formData.email,
+      formData.password
+    );
+    if (tokenFromSupabaseAuthHook) {
+      const responseFromServer = await logInWithEmailPasswordService(
+        formData.email,
+        tokenFromSupabaseAuthHook
+      );
+      if (responseFromServer) {
+        navigate(`/username/dashboard`);
+        return;
+      }
+      alert("Error logging in user!");
+    }
   };
   return (
     <>
