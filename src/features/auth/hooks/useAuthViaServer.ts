@@ -6,7 +6,7 @@ export default function useAuthViaServer () {
 
 async function logInWithEmailPasswordService (email: string, token : string) {
     try {
-      const responseFromServer = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/auth/login`,
         { email },
         {
@@ -48,7 +48,7 @@ async function registerWithEmailPasswordService (name: string, email: string, ro
 
 async function signInWithGoogleService(token: string) {
   try {
-    const responseFromServer = await axios.post(
+    await axios.post(
       `${import.meta.env.VITE_SERVER_URL}/auth/sign-in`,
       {},
       {
