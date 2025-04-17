@@ -15,12 +15,17 @@ export const Register: React.FC = () => {
     email: "",
     password: "",
     role: "",
-    
   });
+  const [errors, setErrors] = useState<Partial<RegisterFormInterface>>({
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-
 
   const handleSubmit = async () => {
     console.log("Form Data:", formData);
@@ -42,14 +47,14 @@ export const Register: React.FC = () => {
       alert("Error registering user!");
     }
   };
-    const handleGoogleRegister = () => {
-      setIsLoading(true);
-      // Simulate Google auth
-      setTimeout(() => {
-        console.log("Google registration initiated");
-        setIsLoading(false);
-      }, 1500);
-    };
+  const handleGoogleRegister = () => {
+    setIsLoading(true);
+    // Simulate Google auth
+    setTimeout(() => {
+      console.log("Google registration initiated");
+      setIsLoading(false);
+    }, 1500);
+  };
   return (
     <>
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -143,8 +148,6 @@ export const Register: React.FC = () => {
                 </div>
               </div>
 
-              
-
               <div>
                 <label
                   htmlFor="role"
@@ -159,7 +162,10 @@ export const Register: React.FC = () => {
                     required
                     value={formData.role}
                     onChange={(e) =>
-                      handleInputChange("role", e.target.value as "doctor" | "patient")
+                      handleInputChange(
+                        "role",
+                        e.target.value as "doctor" | "patient"
+                      )
                     }
                     className={`appearance-none block w-full px-3 py-2 border ${
                       errors.role ? "border-red-300" : "border-gray-300"
@@ -222,7 +228,19 @@ export const Register: React.FC = () => {
 
               <div className="mt-6">
                 <button
-                  onClick={handleGoogleRegister}
+                  onClick={async () => {
+                    const token = await signInWithGoogle();
+                    if (token) {
+                      const responseFromServer = await signInWithGoogleService(
+                        token
+                      );
+                      if (responseFromServer) {
+                        navigate(`/username/dashboard`);
+                        return;
+                      }
+                      
+                    }
+                  }}
                   disabled={isLoading}
                   className="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -258,8 +276,6 @@ export const Register: React.FC = () => {
             </div>
           </div>
         </div>
-
-                
       </div>
     </>
   );

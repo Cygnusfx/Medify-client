@@ -48,7 +48,7 @@ async function signInWithGoogle() {
     });
     const token = (await supabaseClient.auth.getSession()).data.session?.access_token;
     
-    return true;
+    return token;
   } catch (error) {
     console.log(error);
     return null;
