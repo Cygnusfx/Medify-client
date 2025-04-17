@@ -1,18 +1,22 @@
-import React from 'react'
-// import PDFGenerator from './components/PDFGenerator'
-// import LoginPage from './features/auth/components/LoginPage'
-// import Register from './features/auth/components/Register'
+import React from "react";
+
+import { Route, Routes } from "react-router-dom";
+import LoginPage from "./features/auth/pages/LoginPage";
+// import RegisterPage from "./features/auth/pages/RegisterPage";
+import Processor from "./features/auth/components/Processor";
 import LandingPage from './components/LandingPage'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from './features/auth/components/Register';
 import LoginPage from './features/auth/components/LoginPage';
 
 
-const App : React.FC = () => {
+const App: React.FC = () => {
   return (
-    // <PDFGenerator/>
-    // <LoginPage/>
-    // <Register/>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={// <RegisterPage />} />
+      <Route path="/auth/callback" element={<Processor />} />
+    </Routes>
     // <LandingPage/>
     <Router>
       <Routes>
@@ -22,7 +26,7 @@ const App : React.FC = () => {
         {/* <Route path="/book" element={<BookAppointment />} /> */}
       </Routes>
     </Router>
-  );
-}
+  );;
+};
 
-export default App
+export default App;

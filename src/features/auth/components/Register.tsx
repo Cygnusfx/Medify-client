@@ -1,21 +1,17 @@
 import React, { useState } from "react";
+import { RegisterFormInterface } from "../interfaces/registerFormInterface";
+import useSupabaseAuth from "../hooks/useSupabaseAuth";
+import useAuthViaServer from "../hooks/useAuthViaServer";
+import { useNavigate } from "react-router-dom";
 
-const Register: React.FC = () => {
-  interface FormData {
-    email: string;
-    password: string;
-    
-    role: "doctor" | "patient" | "";
-  }
-  interface RegisterFormData {
-    email: string;
-    password: string;
-    
-    role: "doctor" | "patient" | "";
-  }
-  const [errors, setErrors] = useState<Partial<RegisterFormData>>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [formData, setFormData] = useState<FormData>({
+export const Register: React.FC = () => {
+  const { signInWithGoogle, registerWithEmailPassword } = useSupabaseAuth();
+  const { signInWithGoogleService, registerWithEmailPasswordService } =
+    useAuthViaServer();
+
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<RegisterFormInterface>({
+    name: "",
     email: "",
     password: "",
     role: "",
@@ -24,9 +20,27 @@ const Register: React.FC = () => {
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-  const handleSubmit = () => {
+
+
+  const handleSubmit = async () => {
     console.log("Form Data:", formData);
-    alert("Form submitted successfully!");
+    const tokenFromSupabaseAuthHook = await registerWithEmailPassword(
+      formData.email,
+      formData.password
+    );
+    if (tokenFromSupabaseAuthHook) {
+      const responseFromServer = await registerWithEmailPasswordService(
+        formData.name,
+        formData.email,
+        formData.role,
+        tokenFromSupabaseAuthHook
+      );
+      if (responseFromServer) {
+        navigate(`/username/dashboard`);
+        return;
+      }
+      alert("Error registering user!");
+    }
   };
     const handleGoogleRegister = () => {
       setIsLoading(true);
@@ -250,5 +264,3 @@ const Register: React.FC = () => {
     </>
   );
 };
-
-export default Register;

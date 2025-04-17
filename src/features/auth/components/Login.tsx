@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 
+<<<<<<< HEAD:src/features/auth/components/LoginPage.tsx
 const LoginPage: React.FC = () => {
   interface LoginFormData {
     email: string;
     password: string;
   }
+=======
+export const Login: React.FC = () => {
+>>>>>>> b8177a244347d275c2a71a24ff0e51689fe8aeb9:src/features/auth/components/Login.tsx
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -280,4 +284,3 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
