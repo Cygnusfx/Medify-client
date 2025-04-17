@@ -4,10 +4,17 @@ import useAuthViaServer from "../hooks/useAuthViaServer";
 import { useNavigate } from "react-router-dom";
 
 export const Login: React.FC = () => {
-  interface LoginFormData {
-    email: string;
-    password: string;
-  }
+  const { signInWithGoogle, registerWithEmailPassword } = useSupabaseAuth();
+  const { signInWithGoogleService, logInWithEmailPasswordService } =
+    useAuthViaServer();
+
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -15,68 +22,6 @@ export const Login: React.FC = () => {
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
-  // const handleSubmit = () => {
-  //   console.log("Form Data:", formData);
-  //   alert("Form submitted successfully!");
-  // };
-  const [errors, setErrors] = useState<Partial<LoginFormData>>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  //   // Clear error when user types
-  //   if (errors[name as keyof LoginFormData]) {
-  //     setErrors((prev) => ({
-  //       ...prev,
-  //       [name]: undefined,
-  //     }));
-  //   }
-  // };
-
-  const validateForm = (): boolean => {
-    const newErrors: Partial<LoginFormData> = {};
-
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      setIsLoading(true);
-      // Simulate API call
-      setTimeout(() => {
-        console.log("Login form submitted:", formData);
-        setIsLoading(false);
-        // Here you would typically redirect the user or update app state
-      }, 1500);
-    }
-  };
-
-  const handleGoogleLogin = () => {
-    setIsLoading(true);
-    // Simulate Google auth
-    setTimeout(() => {
-      console.log("Google login initiated");
-      setIsLoading(false);
-    }, 1500);
   const handleSubmit = async () => {
     console.log("Form Data:", formData);
     const tokenFromSupabaseAuthHook = await registerWithEmailPassword(
@@ -173,7 +118,9 @@ export const Login: React.FC = () => {
                     autoComplete="current-password"
                     required
                     value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                     className={`appearance-none block w-full px-3 py-2 border ${
                       errors.password ? "border-red-300" : "border-gray-300"
                     } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
@@ -259,7 +206,20 @@ export const Login: React.FC = () => {
 
               <div className="mt-6">
                 <button
-                  onClick={handleGoogleLogin}
+                  onClick={async () => {
+                    setIsLoading(true);
+                    const tokenFromSupabaseAuthHook = await signInWithGoogle();
+                    if (tokenFromSupabaseAuthHook) {
+                      const responseFromServer =
+                        await signInWithGoogleService(tokenFromSupabaseAuthHook);
+                      if (responseFromServer) {
+                        navigate(`/username/dashboard`);
+                        return;
+                      }
+                      alert("Error logging in user!");
+                    }
+                    setIsLoading(false);
+                  }}
                   disabled={isLoading}
                   className="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -299,4 +259,3 @@ export const Login: React.FC = () => {
     </>
   );
 };
-
