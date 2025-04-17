@@ -10,10 +10,10 @@ export const Login: React.FC = () => {
 
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
+  // const [errors, setErrors] = useState({
+  //   email: "",
+  //   password: "",
+  // });
 
   const [formData, setFormData] = useState({
     email: "",
@@ -93,13 +93,12 @@ export const Login: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    className={`appearance-none block w-full px-3 py-2 border ${
-                      errors.email ? "border-red-300" : "border-gray-300"
-                    } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
+                    className={`appearance-none block w-full px-3 py-2 border border-gray-300
+                     rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
                   />
-                  {errors.email && (
+                  {/* {errors.email && (
                     <p className="mt-2 text-sm text-red-600">{errors.email}</p>
-                  )}
+                  )} */}
                 </div>
               </div>
 
@@ -121,15 +120,15 @@ export const Login: React.FC = () => {
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
                     }
-                    className={`appearance-none block w-full px-3 py-2 border ${
-                      errors.password ? "border-red-300" : "border-gray-300"
-                    } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
+                    className={`appearance-none block w-full px-3 py-2 border
+                     border-gray-300
+                    rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm`}
                   />
-                  {errors.password && (
+                  {/* {errors.password && (
                     <p className="mt-2 text-sm text-red-600">
                       {errors.password}
                     </p>
-                  )}
+                  )} */}
                 </div>
               </div>
 
@@ -210,8 +209,9 @@ export const Login: React.FC = () => {
                     setIsLoading(true);
                     const tokenFromSupabaseAuthHook = await signInWithGoogle();
                     if (tokenFromSupabaseAuthHook) {
-                      const responseFromServer =
-                        await signInWithGoogleService(tokenFromSupabaseAuthHook);
+                      const responseFromServer = await signInWithGoogleService(
+                        tokenFromSupabaseAuthHook
+                      );
                       if (responseFromServer) {
                         navigate(`/username/dashboard`);
                         return;
